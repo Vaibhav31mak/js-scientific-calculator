@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Scientific Calculator</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+	<main class="app container-fluid g-0">
+		<section class="calculator" aria-label="Scientific calculator">
+			<section class="calculator-main">
+				<div class="mode-row d-flex align-items-center px-2">
+					<button class="menu-btn">☰</button>
+					<h2 class="mode-title">Scientific</h2>
+				</div>
+
+				<section class="display-wrap" aria-live="polite">
+					<p id="expression" class="expression"></p>
+					<h1 id="display" class="display">0</h1>
+				</section>
+
+				<header class="calc-top-row" aria-label="View settings">
+					<button class="mini-btn active" data-mini="deg">DEG</button>
+					<button class="mini-btn" data-mini="f-e">F-E</button>
+				</header>
+
+				<section class="memory-row" aria-label="Memory actions">
+					<button class="memory-btn disabled" data-action="mc">MC</button>
+					<button class="memory-btn disabled" data-action="mr">MR</button>
+					<button class="memory-btn" data-action="mplus">M+</button>
+					<button class="memory-btn" data-action="mminus">M-</button>
+					<button class="memory-btn" data-action="ms">MS</button>
+				</section>
+
+				<section class="feature-row" aria-label="Function categories">
+					<button class="feature-btn" id="trigToggle">∡ Trigonometry <span class="caret">˅</span></button>
+					<button class="feature-btn" id="funcToggle">𝑓 Function <span class="caret">˅</span></button>
+					<button id="themeToggle" class="feature-btn right">☼</button>
+				</section>
+
+				<!-- Trigonometry expanding panel -->
+				<section class="expand-panel" id="trigPanel">
+					<button class="panel-key" data-action="second">2<sup>nd</sup></button>
+					<button class="panel-key" data-action="sin">sin</button>
+					<button class="panel-key" data-action="cos">cos</button>
+					<button class="panel-key" data-action="tan">tan</button>
+					<button class="panel-key" data-action="hyp">hyp</button>
+					<button class="panel-key" data-action="sec">sec</button>
+					<button class="panel-key" data-action="csc">csc</button>
+					<button class="panel-key" data-action="cot">cot</button>
+				</section>
+
+				<!-- Function expanding panel -->
+				<section class="expand-panel" id="funcPanel">
+					<button class="panel-key" data-action="abs">|x|</button>
+					<button class="panel-key" data-action="floor">⌊x⌋</button>
+					<button class="panel-key" data-action="ceil">⌈x⌉</button>
+					<button class="panel-key" data-action="rand">rand</button>
+					<button class="panel-key" data-action="dms">dms</button>
+					<button class="panel-key" data-action="deg2">deg</button>
+				</section>
+
+				<section class="keys" aria-label="Calculator keys">
+					<button class="key light" data-action="second">2<sup>nd</sup></button>
+					<button class="key light" data-value="PI">π</button>
+					<button class="key light" data-value="E">e</button>
+					<button class="key light" data-action="clear">CE</button>
+					<button class="key light" data-action="backspace">⌫</button>
+
+					<button class="key light" data-action="square">x²</button>
+					<button class="key light" data-action="inverse">¹/x</button>
+					<button class="key light" data-action="abs">|x|</button>
+					<button class="key light" data-action="exp">exp</button>
+					<button class="key light" data-operator="%">mod</button>
+
+					<button class="key light" data-action="sqrt">²√x</button>
+					<button class="key light" data-action="open">(</button>
+					<button class="key light" data-action="close">)</button>
+					<button class="key light" data-action="factorial">n!</button>
+					<button class="key light" data-operator="/">÷</button>
+
+					<button class="key light" data-action="power">xʸ</button>
+					<button class="key" data-value="7">7</button>
+					<button class="key" data-value="8">8</button>
+					<button class="key" data-value="9">9</button>
+					<button class="key light" data-operator="*">×</button>
+
+					<button class="key light" data-action="pow10">10ˣ</button>
+					<button class="key" data-value="4">4</button>
+					<button class="key" data-value="5">5</button>
+					<button class="key" data-value="6">6</button>
+					<button class="key light" data-operator="-">−</button>
+
+					<button class="key light" data-action="log">log</button>
+					<button class="key" data-value="1">1</button>
+					<button class="key" data-value="2">2</button>
+					<button class="key" data-value="3">3</button>
+					<button class="key light" data-operator="+">+</button>
+
+					<button class="key light" data-action="ln">ln</button>
+					<button class="key" data-action="sign">+/-</button>
+					<button class="key" data-value="0">0</button>
+					<button class="key" data-value=".">.</button>
+					<button class="key equals" data-action="equals">=</button>
+				</section>
+			</section>
+
+			<aside class="history-panel" aria-label="Recent calculations">
+				<div class="history-tabs">
+					<button class="tab-btn active" type="button" data-tab="history">History</button>
+					<button class="tab-btn" type="button" data-tab="memory">Memory</button>
+				</div>
+				<button id="clearHistoryBtn" class="history-clear">Clear</button>
+				<ul id="historyList" class="history-list"></ul>
+			</aside>
+		</section>
+	</main>
+
+	<script src="script.js"></script>
+</body>
+</html>
