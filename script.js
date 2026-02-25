@@ -311,6 +311,7 @@
       this.isDeg = true;
       this.isFE = false;
       this.isSecond = false;
+      this.isHyp = false;
       this.hasMemory = false;
       this.justEvaluated = false;
       this.errorState = false;
@@ -810,6 +811,61 @@
           n = this._angleOut(Math.atan(1 / v));
           symbolBefore = "cot⁻¹("; symbolAfter = ")";
           break;
+        case "sinh":
+          n = Math.sinh(v);
+          symbolBefore = "sinh("; symbolAfter = ")";
+          break;
+        case "cosh":
+          n = Math.cosh(v);
+          symbolBefore = "cosh("; symbolAfter = ")";
+          break;
+        case "tanh":
+          n = Math.tanh(v);
+          symbolBefore = "tanh("; symbolAfter = ")";
+          break;
+        case "sech":
+          n = 1 / Math.cosh(v);
+          symbolBefore = "sech("; symbolAfter = ")";
+          break;
+        case "csch":
+          if (v === 0) throw new Error("Undefined");
+          n = 1 / Math.sinh(v);
+          symbolBefore = "csch("; symbolAfter = ")";
+          break;
+        case "coth":
+          if (v === 0) throw new Error("Undefined");
+          n = Math.cosh(v) / Math.sinh(v);
+          symbolBefore = "coth("; symbolAfter = ")";
+          break;
+        case "asinh":
+          n = Math.asinh(v);
+          symbolBefore = "sinh⁻¹("; symbolAfter = ")";
+          break;
+        case "acosh":
+          if (v < 1) throw new Error("Invalid input");
+          n = Math.acosh(v);
+          symbolBefore = "cosh⁻¹("; symbolAfter = ")";
+          break;
+        case "atanh":
+          if (v <= -1 || v >= 1) throw new Error("Invalid input");
+          n = Math.atanh(v);
+          symbolBefore = "tanh⁻¹("; symbolAfter = ")";
+          break;
+        case "asech":
+          if (v <= 0 || v > 1) throw new Error("Invalid input");
+          n = Math.acosh(1 / v);
+          symbolBefore = "sech⁻¹("; symbolAfter = ")";
+          break;
+        case "acsch":
+          if (v === 0) throw new Error("Invalid input");
+          n = Math.asinh(1 / v);
+          symbolBefore = "csch⁻¹("; symbolAfter = ")";
+          break;
+        case "acoth":
+          if (v >= -1 && v <= 1) throw new Error("Invalid input");
+          n = Math.atanh(1 / v);
+          symbolBefore = "coth⁻¹("; symbolAfter = ")";
+          break;
         case "factorial":
           n = Utils.factorial(v);
           symbolBefore = "fact("; symbolAfter = ")";
@@ -1009,6 +1065,7 @@
         if (action === "second") {
           this._toggle2nd();
         } else if (action === "hyp") {
+          this._toggleHyp();
         } else if (action === "rand") {
           var r = Math.random();
           this.calculator.currentInput = r.toString();
@@ -1161,6 +1218,10 @@
         case "log": case "ln": case "log2":
         case "sin": case "cos": case "tan":
         case "asin": case "acos": case "atan":
+        case "sinh": case "cosh": case "tanh":
+        case "asinh": case "acosh": case "atanh":
+        case "sech": case "csch": case "coth":
+        case "asech": case "acsch": case "acoth":
         case "2x":
           this.calculator.applyUnary(action);
           break;
@@ -1178,15 +1239,6 @@
         { normal: "log",     sAct: "log2",    sLabel: "log₂",         nLabel: "log" },
         { normal: "ln",      sAct: "exp",     sLabel: "eˣ",           nLabel: "ln" },
       ];
-      var trigMap = [
-        { normal: "sin", sAct: "asin", sLabel: "sin⁻¹", nLabel: "sin" },
-        { normal: "cos", sAct: "acos", sLabel: "cos⁻¹", nLabel: "cos" },
-        { normal: "tan", sAct: "atan", sLabel: "tan⁻¹", nLabel: "tan" },
-        { normal: "sec", sAct: "asec", sLabel: "sec⁻¹", nLabel: "sec" },
-        { normal: "csc", sAct: "acsc", sLabel: "csc⁻¹", nLabel: "csc" },
-        { normal: "cot", sAct: "acot", sLabel: "cot⁻¹", nLabel: "cot" },
-      ];
-
       map.forEach(function (m) {
         var el = document.querySelector('.key[data-action="' + (s ? m.normal : m.sAct) + '"]');
         if (el) {
@@ -1195,18 +1247,65 @@
         }
       });
 
-      trigMap.forEach(function (m) {
-        var el = document.querySelector('.panel-key[data-action="' + (s ? m.normal : m.sAct) + '"]');
-        if (el) {
-          el.dataset.action = s ? m.sAct : m.normal;
-          el.textContent = s ? m.sLabel : m.nLabel;
-        }
-      });
-
       var secondBtn = document.querySelector('.key[data-action="second"]');
       if (secondBtn) secondBtn.classList.toggle("active-2nd", s);
       var secondPanelBtn = document.querySelector('.panel-key[data-action="second"]');
       if (secondPanelBtn) secondPanelBtn.classList.toggle("active-2nd", s);
+
+      this._updateTrigLabels();
+    }
+
+    _toggleHyp() {
+      this.calculator.isHyp = !this.calculator.isHyp;
+      var hypBtn = this.trigPanel.querySelector('[data-action="hyp"]');
+      if (hypBtn) hypBtn.classList.toggle("active-2nd", this.calculator.isHyp);
+      this._updateTrigLabels();
+    }
+
+    _updateTrigLabels() {
+      var s = this.calculator.isSecond;
+      var h = this.calculator.isHyp;
+
+      var labelMap = {
+        sin:  { normal: "sin",  inv: "sin⁻¹",  hyp: "sinh",  invHyp: "sinh⁻¹" },
+        cos:  { normal: "cos",  inv: "cos⁻¹",  hyp: "cosh",  invHyp: "cosh⁻¹" },
+        tan:  { normal: "tan",  inv: "tan⁻¹",  hyp: "tanh",  invHyp: "tanh⁻¹" },
+        sec:  { normal: "sec",  inv: "sec⁻¹",  hyp: "sech",  invHyp: "sech⁻¹" },
+        csc:  { normal: "csc",  inv: "csc⁻¹",  hyp: "csch",  invHyp: "csch⁻¹" },
+        cot:  { normal: "cot",  inv: "cot⁻¹",  hyp: "coth",  invHyp: "coth⁻¹" }
+      };
+
+      var actionMap = {
+        sin:  { normal: "sin",  inv: "asin",  hyp: "sinh",  invHyp: "asinh" },
+        cos:  { normal: "cos",  inv: "acos",  hyp: "cosh",  invHyp: "acosh" },
+        tan:  { normal: "tan",  inv: "atan",  hyp: "tanh",  invHyp: "atanh" },
+        sec:  { normal: "sec",  inv: "asec",  hyp: "sech",  invHyp: "asech" },
+        csc:  { normal: "csc",  inv: "acsc",  hyp: "csch",  invHyp: "acsch" },
+        cot:  { normal: "cot",  inv: "acot",  hyp: "coth",  invHyp: "acoth" }
+      };
+
+      var allActions = ["sin","asin","sinh","asinh","cos","acos","cosh","acosh",
+                        "tan","atan","tanh","atanh","sec","asec","sech","asech",
+                        "csc","acsc","csch","acsch","cot","acot","coth","acoth"];
+
+      var mode = s ? (h ? "invHyp" : "inv") : (h ? "hyp" : "normal");
+
+      Object.keys(labelMap).forEach(function (base) {
+        var newLabel = labelMap[base][mode];
+        var newAction = actionMap[base][mode];
+
+        for (var i = 0; i < allActions.length; i++) {
+          var el = document.querySelector('.panel-key[data-action="' + allActions[i] + '"]');
+          if (el && actionMap[base]) {
+            var vals = Object.values(actionMap[base]);
+            if (vals.indexOf(allActions[i]) !== -1) {
+              el.dataset.action = newAction;
+              el.textContent = newLabel;
+              break;
+            }
+          }
+        }
+      });
     }
 
     _refresh() {
